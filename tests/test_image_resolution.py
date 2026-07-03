@@ -2,8 +2,24 @@
 import socket
 
 import pytest
+import requests
 
 from app.services.ai_service import AIService
+
+
+def _network_service():
+    """Build an AIService without its LLM init, wired for real HTTP calls.
+
+    Mirrors the session and browser User-Agent the app uses at runtime so the
+    live image lookups behave the same as production.
+    """
+    svc = AIService.__new__(AIService)
+    svc.web_headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    svc.web_session = requests.Session()
+    return svc
 
 
 # ------------------------------------------------------------- pure unit tests
@@ -67,8 +83,7 @@ def _online() -> bool:
     ("Hawa Mahal", "Jaipur"),
 ])
 def test_live_wikipedia_returns_real_image(place, city):
-    svc = AIService.__new__(AIService)
-    svc.web_headers = {"User-Agent": "BharatBhraman-Test/1.0"}
+    svc = _network_service()
     url = svc._fetch_wikipedia_image(place, city)
     assert url.startswith("http")
     assert url.lower().endswith((".jpg", ".jpeg", ".png"))
@@ -77,6 +92,5 @@ def test_live_wikipedia_returns_real_image(place, city):
 @pytest.mark.network
 @pytest.mark.skipif(not _online(), reason="no network")
 def test_live_unknown_place_yields_no_image():
-    svc = AIService.__new__(AIService)
-    svc.web_headers = {"User-Agent": "BharatBhraman-Test/1.0"}
+    svc = _network_service()
     assert svc._fetch_wikipedia_image("Zzz Fake Attraction Qwerty", "Nowhereville") == ""

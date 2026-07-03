@@ -10,6 +10,7 @@ network-dependent, so they are opt-in:
 
 Run a single route/flow with -k, e.g.  RUN_INTEGRATION=1 pytest -k goa
 """
+import datetime
 import os
 import time
 import uuid
@@ -22,7 +23,8 @@ pytestmark = [
     pytest.mark.skipif(not RUN, reason="set RUN_INTEGRATION=1 to run live integration tests"),
 ]
 
-SEARCH_DATE = os.environ.get("INTEGRATION_DATE", "2026-07-15")
+_DEFAULT_SEARCH_DATE = (datetime.date.today() + datetime.timedelta(days=21)).isoformat()
+SEARCH_DATE = os.environ.get("INTEGRATION_DATE", _DEFAULT_SEARCH_DATE)
 RAILYATRI_DATE = "-".join(reversed(SEARCH_DATE.split("-")))  # YYYY-MM-DD -> DD-MM-YYYY
 
 
