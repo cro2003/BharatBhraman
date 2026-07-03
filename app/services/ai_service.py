@@ -82,7 +82,7 @@ class AIService:
             max_retries=2,
         )
         self.web_headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'User-Agent': 'BharatBhraman/1.0 (+https://bharatbhraman.chiragrai.de)'
         }
         self.web_session = requests.Session()
         _retry = Retry(total=2, backoff_factor=0.6, status_forcelist=(429, 500, 502, 503, 504),

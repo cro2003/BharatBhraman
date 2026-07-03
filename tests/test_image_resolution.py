@@ -10,14 +10,11 @@ from app.services.ai_service import AIService
 def _network_service():
     """Build an AIService without its LLM init, wired for real HTTP calls.
 
-    Mirrors the session and browser User-Agent the app uses at runtime so the
-    live image lookups behave the same as production.
+    Mirrors the session and policy-compliant User-Agent the app uses at runtime
+    so the live image lookups behave the same as production.
     """
     svc = AIService.__new__(AIService)
-    svc.web_headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    }
+    svc.web_headers = {"User-Agent": "BharatBhraman/1.0 (+https://bharatbhraman.chiragrai.de)"}
     svc.web_session = requests.Session()
     return svc
 
