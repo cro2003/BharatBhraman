@@ -111,7 +111,7 @@ class LocationService:
         normalized["city"] = city
         return normalized
 
-    def get_location_data(self, query: str) -> Optional[Dict]:
+    def get_location_data(self, query: str, near: Optional[tuple] = None) -> Optional[Dict]:
         """
         Resolves a textual city/place into structured coordinate metadata.
 
@@ -126,10 +126,16 @@ class LocationService:
         India query. place_types are the settlement/region result types trusted
         for an India match; 'county' covers Indian districts used as destinations
         (e.g. Kutch), which geocode as a county, not a settlement.
+
+        ``near`` is an optional ``(lat, lon)`` anchor that biases results toward
+        that point, disambiguating same-named places (e.g. the station 'Vijaypur
+        Jammu' resolves near Jammu, not the unrelated Vijaypur in MP).
         """
         query = PLACE_ALIASES.get(query.strip().lower(), query)
         url = f"{self.base_v1}/geocode/search"
         base = {"text": query, "format": "json", "apiKey": self.api_key}
+        if near and near[0] is not None and near[1] is not None:
+            base["bias"] = f"proximity:{near[1]},{near[0]}"
         place_types = {"city", "postcode", "town", "village", "locality",
                        "municipality", "district", "county"}
         try:

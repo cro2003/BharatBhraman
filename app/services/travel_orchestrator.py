@@ -281,7 +281,7 @@ class TravelOrchestrator:
         if dest_loc.get('lat') is None:
             return True
         try:
-            rl = self.loc_svc.get_location_data(railhead)
+            rl = self.loc_svc.get_location_data(railhead, near=(dest_loc['lat'], dest_loc['lon']))
             if not rl:
                 return False
             km = LocationService.haversine_km(dest_loc['lat'], dest_loc['lon'], rl['lat'], rl['lon'])
@@ -299,7 +299,7 @@ class TravelOrchestrator:
         if not place or dest_loc.get('lat') is None:
             return None
         try:
-            pl = self.loc_svc.get_location_data(place)
+            pl = self.loc_svc.get_location_data(place, near=(dest_loc['lat'], dest_loc['lon']))
             if not pl or pl.get('lat') is None:
                 return None
             km = LocationService.haversine_km(
@@ -319,7 +319,7 @@ class TravelOrchestrator:
         if not station or dest_loc.get('lat') is None:
             return True
         try:
-            sl = self.loc_svc.get_location_data(station)
+            sl = self.loc_svc.get_location_data(station, near=(dest_loc['lat'], dest_loc['lon']))
             if not sl or sl.get('lat') is None:
                 return True
             km = LocationService.haversine_km(
