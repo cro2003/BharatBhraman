@@ -8,13 +8,13 @@ Type where you are and where you want to go. BharatBhraman finds the real routes
 picks the best combination, builds a day-worthy itinerary, and lets you ask a
 trip-aware assistant anything about the plan you chose.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Open_app-2E4CB8?style=flat-square&logo=vercel&logoColor=white)](LIVE_URL_HERE)
-&nbsp;
+[![Live Demo](https://img.shields.io/github/actions/workflow/status/cro2003/HackFest_BharatBhraman/deploy.yml?style=flat-square&logo=googlechrome&logoColor=white&label=Live%20Demo)](https://bharatbhraman.chiragrai.de)
+[![CI](https://img.shields.io/github/actions/workflow/status/cro2003/HackFest_BharatBhraman/ci.yml?style=flat-square&logo=githubactions&logoColor=white&label=CI)](https://github.com/cro2003/HackFest_BharatBhraman/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-API_first-000000?style=flat-square&logo=flask&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)
 ![Gemini](https://img.shields.io/badge/AI-Google_Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-118_passing-3FB950?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Traefik-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 
 <br>
