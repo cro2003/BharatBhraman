@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title.dashboard">BharatBhraman - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+</head>
+<body data-page="dashboard">
+    <div class="page-shell">
+        <header class="site-header">
+            <nav class="nav-bar">
+                <a class="brand" href="/">
+                    <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                    <span class="brand-tag" data-i18n="brand.tagDashboard">Dashboard</span>
+                </a>
+                <button class="nav-toggle" type="button" aria-label="Toggle menu" data-nav-toggle>
+                    <i class="ri-menu-3-line"></i>
+                </button>
+                <div class="nav-links" data-nav-panel>
+                    <a href="/" data-i18n="nav.planner">Planner</a>
+                    <a href="/results" data-i18n="nav.results">Results</a>
+                    <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                    <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                    <a href="#" data-action="logout" style="color: var(--danger);" data-i18n="nav.logout">Logout</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="dashboard-container">
+            <div class="section-heading">
+                <p class="eyebrow" data-i18n="dashboard.account">Your Account</p>
+                <h2><span data-i18n="dashboard.welcome">Welcome</span>, {{ session.get('user_name', 'Traveler') }}!</h2>
+            </div>
+
+            <div class="dashboard-stats" data-reveal data-reveal-group>
+                <div class="dashboard-stat">
+                    <span class="dashboard-stat__icon"><i class="ri-route-line"></i></span>
+                    <div>
+                        <div class="dashboard-stat__value" id="stat-trips">—</div>
+                        <div class="dashboard-stat__label" data-i18n="dashboard.savedTrips">Saved Trips</div>
+                    </div>
+                </div>
+                <div class="dashboard-stat">
+                    <span class="dashboard-stat__icon"><i class="ri-map-pin-user-line"></i></span>
+                    <div>
+                        <div class="dashboard-stat__value" id="stat-bookings">—</div>
+                        <div class="dashboard-stat__label" data-i18n="dashboard.bookings">Guide Bookings</div>
+                    </div>
+                </div>
+                <a class="dashboard-stat" href="/" style="text-decoration:none;">
+                    <span class="dashboard-stat__icon"><i class="ri-add-circle-line"></i></span>
+                    <div>
+                        <div class="dashboard-stat__value" style="font-size:1.05rem;" data-i18n="dashboard.planTrip">Plan a New Trip</div>
+                        <div class="dashboard-stat__label" data-i18n="dashboard.planTripSub">Start a fresh search</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="dashboard-grid">
+                <section class="dashboard-panel" data-reveal>
+                    <div class="dashboard-panel__head">
+                        <i class="ri-route-line"></i>
+                        <h3 data-i18n="dashboard.savedTrips">Saved Trips</h3>
+                        <span class="count-badge" id="trips-count" hidden>0</span>
+                    </div>
+                    <div id="saved-trips-list">
+                        <div class="empty-state">
+                            <i class="ri-loader-4-line ri-spin"></i>
+                            <p data-i18n="dashboard.loadingTrips">Loading your trips...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-panel" data-reveal>
+                    <div class="dashboard-panel__head">
+                        <i class="ri-map-pin-user-line"></i>
+                        <h3 data-i18n="dashboard.bookings">Guide Bookings</h3>
+                        <span class="count-badge" id="bookings-count" hidden>0</span>
+                    </div>
+                    <div id="guide-bookings-list">
+                        <div class="empty-state">
+                            <i class="ri-loader-4-line ri-spin"></i>
+                            <p data-i18n="dashboard.loadingBookings">Loading your bookings...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+</body>
+</html>

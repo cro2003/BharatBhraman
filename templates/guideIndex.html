@@ -1,95 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/guideIndex.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/sheryjs/dist/Shery.css" /> <!-- Recommended -->
- 
+    <title data-i18n="title.guides">BharatBhraman Guides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
 </head>
-<body>
-    <header id="header">
-        <nav class="neumorphic-nav">
-          <div class="logo">
-            <h3>Bhara<span>tभ्र</span>मण</h3>
-          </div>
-        <div id="nav-c">
-          <a href="/" class="buy" data-tilt data-tilt-scale="1.08"
-          
-          ><i class="ri-home-fill" ></i>Home</a><a class="buy" data-tilt data-tilt-scale="1.08"
-          
-          href="#" ><i class="ri-flight-takeoff-line"></i>Flight</a><a href="#" class="buy" data-tilt data-tilt-scale="1.08"
-          
-           ><i class="ri-train-fill"></i>Train</a><a class="buy"data-tilt data-tilt-scale="1.08"
-          
-          href="/guide"><i class="ri-group-line"></i>Guide</a>
-          <a href="/chat" class="buy" data-tilt data-tilt-scale="1.08"
-          
-          ><i class="ri-chat-1-fill"></i>Chat</a>
-        </div>
-          <div id="logo-part2">
-            
-              <div class="form-group" data-tilt data-tilt-scale="1.08">
-          <select id="language" placeholder="language"   name="language"required>
-        
-            <option value="en">English   </option>
-            <option value="Gujrati">Gujrati   (અઅ)</option>
-            <option value="Hindi ">Hindi   (आ)</option>
-            <option value="Kannda">Kannda   (ಆ)</option>
-            <option value="Malyalam">Malyalam   (Aa)</option>
-            <option value="Tamil">Tamil   (ஆ)</option>
-            <option value="Telugu">Telugu   (ఆ)</option>
-            <option value="Urdu">Urdu   (اے)</option>
-            <option value="Urdu">English   (Aa)</option>
-        
-          </select>
-        </div>
-            
-           
-            <a href="/add-guide" class="login"class="buy" data-tilt data-tilt-scale="1.08"
-            
-            ><i class="ri-user-fill"></i>Register Guide</a>
-          </div>
-    
-    
-        </nav>
-      </header>
 
+<body data-page="guides">
+    <div class="page-shell page-shell--guides">
+        <header class="site-header">
+            <nav class="nav-bar">
+                <a class="brand" href="/">
+                    <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                    <span class="brand-tag" data-i18n="brand.tagGuides">Local Guide Discovery</span>
+                </a>
+                <button class="nav-toggle" type="button" aria-label="Toggle menu" data-nav-toggle>
+                    <i class="ri-menu-3-line"></i>
+                </button>
+                <div class="nav-links" data-nav-panel>
+                    <a href="/" data-i18n="nav.planner">Planner</a>
+                    <a href="/results" data-i18n="nav.results">Results</a>
+                    <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                    <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                    {% if session.get('is_logged_in') %}
+                    <a href="/dashboard" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="#" data-action="logout" style="color: var(--danger);" data-i18n="nav.logout">Logout</a>
+                    {% else %}
+                    <a href="/auth" style="font-weight: 700;" data-i18n="nav.login">Login / Register</a>
+                    {% endif %}
+                </div>
+                <div class="nav-actions">
+                    <a class="ghost-button" href="#guide-register" data-i18n="guides.navRegister">Register as guide</a>
+                    <a class="nav-cta" href="#guide-search" data-i18n="guides.navFind">Find a guide</a>
+                </div>
+            </nav>
+        </header>
 
-    <div id="main">
-        <div id="page1">
-            <div id="center">
-            <h1>Discover your next adventure with a trusted travel guide. Book here! </h1>
-            <div class="box">
-                <form action="/show-guide" method="post">
-                    <input type="text" list="programmingLanguages"
-                    id="box_input" name="name" placeholder="where to?" />
-          <datalist id="programmingLanguages">
-              {% for languages in data %}
-          <option value="{{ languages }}">{{ languages }}</option>
-		  {% endfor %}
-             </datalist>
-             <input type="submit" value="submit" id="submit">
-            </form> </div> 
-             <div id="image">
-                <img src="https://media.discordapp.net/attachments/1226807831382986802/1234132412775010334/65c570b80adb61129860e9fb21201c4e.png?ex=6640c260&is=663f70e0&hm=8f5222d50e70439d47caf43537365f9a30895732f96228cfc7634796b4b657f3&=&format=webp&quality=lossless&width=1368&height=1066" alt="">
-             </div>
-                 
-            </div>
-            </div>
-        </div>
+        <main class="guides-page">
+            <section class="guides-hero">
+                <div class="guides-hero__copy">
+                    <p class="eyebrow" data-i18n="guides.heroEyebrow">Ground support</p>
+                    <h1 data-i18n="guides.heroTitle">Find local guides for the destination you already planned.</h1>
+                    <p class="hero-text" data-i18n="guides.heroText">
+                        Search verified local guides by city and language, see their rates and reviews, and book directly.
+                    </p>
+                    <div class="hero-highlights">
+                        <div class="highlight-pill"><i class="ri-map-pin-2-line"></i> <span data-i18n="guides.pillDestination">Destination matching</span></div>
+                        <div class="highlight-pill"><i class="ri-translate-2"></i> <span data-i18n="guides.pillLanguage">Language filtering</span></div>
+                        <div class="highlight-pill"><i class="ri-user-star-line"></i> <span data-i18n="guides.pillRatings">Ratings &amp; pricing</span></div>
+                    </div>
+                </div>
+
+                <section class="guide-search-panel" id="guide-search">
+                    <div class="search-panel-header">
+                        <div>
+                            <p class="panel-kicker" data-i18n="guides.searchKicker">Guide search</p>
+                            <h2 data-i18n="guides.searchHeading">Discover local experts</h2>
+                        </div>
+                        <span class="panel-chip" data-i18n="guides.chipApi">Live listings</span>
+                    </div>
+                    <form id="guide-search-form" class="trip-form">
+                        <div class="form-grid form-grid--guide">
+                            <label class="field">
+                                <span data-i18n="guides.city">City</span>
+                                <input type="text" id="guide-city" name="city" placeholder="Vidisha, Jaipur, Mumbai"
+                                    data-i18n-placeholder="guides.cityPlaceholder" required>
+                            </label>
+                            <label class="field">
+                                <span data-i18n="guides.language">Language</span>
+                                <input type="text" id="guide-language" name="language"
+                                    placeholder="Optional: English, Hindi" data-i18n-placeholder="guides.langPlaceholder">
+                            </label>
+                        </div>
+                        <div class="search-actions">
+                            <p class="search-hint" data-i18n="guides.searchHint">Guide search matches the exact city name.
+                            </p>
+                            <button class="primary-button" id="guide-search-submit" type="submit">
+                                <span data-i18n="guides.searchBtn">Search Guides</span>
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </section>
+
+            <section class="guides-results-header" data-reveal>
+                <div>
+                    <p class="eyebrow" data-i18n="guides.availableEyebrow">Available guides</p>
+                    <h2 id="guides-results-title" data-i18n="guides.searchToLoad">Search to load guide cards</h2>
+                </div>
+                <p id="guides-results-subtitle" class="results-subtle" data-i18n="guides.noSearchYet">No guide search has been run yet.</p>
+            </section>
+
+            <section class="guides-grid" id="guides-grid">
+                <article class="trip-card guide-empty-card">
+                    <h3 data-i18n="guides.cardsAppear">Guide cards will appear here</h3>
+                    <p data-i18n="guides.emptyCardHint">Search by destination city and optional language to load available guides.</p>
+                </article>
+            </section>
+
+            <section class="guide-register-section" id="guide-register" data-reveal>
+                <div class="guides-results-header">
+                    <div>
+                        <p class="eyebrow" data-i18n="guides.becomeEyebrow">Become a guide</p>
+                        <h2 data-i18n="guides.registerHeading">Register as a local guide</h2>
+                    </div>
+                    <p class="results-subtle" data-i18n="guides.registerSubtitle">Share your city knowledge and earn by guiding travelers.</p>
+                </div>
+
+                <div class="guide-search-panel">
+                    <div class="search-panel-header">
+                        <div>
+                            <p class="panel-kicker" data-i18n="guides.regKicker">Guide registration</p>
+                            <h2 data-i18n="guides.regHeading">Your profile details</h2>
+                        </div>
+                        <span class="panel-chip" data-i18n="guides.chipNew">New guide</span>
+                    </div>
+                    <form id="guide-register-form" class="trip-form">
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="guides.fullName">Full name</span>
+                                <input type="text" id="reg-name" name="name" placeholder="Rajesh Sharma" required>
+                            </label>
+                            <label class="field">
+                                <span data-i18n="guides.email">Email</span>
+                                <input type="email" id="reg-email" name="email" placeholder="rajesh@example.com" required>
+                            </label>
+                        </div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="guides.phone">Phone</span>
+                                <input type="tel" id="reg-phone" name="phone" placeholder="9876543210" required>
+                            </label>
+                            <label class="field">
+                                <span data-i18n="guides.cityCovered">City you cover</span>
+                                <input type="text" id="reg-city" name="city" placeholder="Mumbai, Jaipur, Delhi" required>
+                            </label>
+                        </div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="guides.languagesCsv">Languages (comma separated)</span>
+                                <input type="text" id="reg-languages" name="languages" placeholder="Hindi, English, Marathi" required>
+                            </label>
+                            <label class="field">
+                                <span data-i18n="guides.hourlyRate">Hourly rate (₹)</span>
+                                <input type="number" id="reg-rate" name="hourly_rate" placeholder="500" min="0" required>
+                            </label>
+                        </div>
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="guides.age">Age</span>
+                                <input type="number" id="reg-age" name="age" placeholder="28" min="18" max="80">
+                            </label>
+                            <label class="field">
+                                <span data-i18n="guides.gender">Gender</span>
+                                <select id="reg-gender" name="gender">
+                                    <option value="" data-i18n="guides.genderSelect">Select</option>
+                                    <option value="Male" data-i18n="guides.male">Male</option>
+                                    <option value="Female" data-i18n="guides.female">Female</option>
+                                    <option value="Other" data-i18n="guides.other">Other</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="search-actions">
+                            <p class="search-hint" data-i18n="guides.regHint">Your profile will be visible to travelers searching this city.</p>
+                            <button class="primary-button" id="guide-register-submit" type="submit">
+                                <span data-i18n="guides.register">Register</span>
+                                <i class="ri-user-add-line"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div id="register-status" class="guide-status-banner" hidden></div>
+                </div>
+            </section>
+
+            <dialog id="booking-dialog" class="booking-dialog">
+                <div class="booking-dialog__content">
+                    <div class="search-panel-header">
+                        <div>
+                            <p class="panel-kicker" data-i18n="booking.kicker">Book guide</p>
+                            <h2 id="booking-dialog-title" data-i18n="booking.title">Confirm booking</h2>
+                        </div>
+                        <button type="button" class="trip-chat-widget__close" id="booking-dialog-close" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <form id="booking-form" class="trip-form">
+                        <input type="hidden" id="booking-guide-id" name="guide_id">
+                        <input type="hidden" id="booking-rate" value="0">
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="booking.date">Select date</span>
+                                <input type="date" id="booking-date" name="date" required>
+                            </label>
+                            <label class="field">
+                                <span data-i18n="booking.hours">Hours</span>
+                                <input type="number" id="booking-hours" name="hours" min="1" max="12" step="1" value="2" required>
+                            </label>
+                        </div>
+                        <div class="booking-quote" id="booking-quote" aria-live="polite"></div>
+                        <div class="search-actions">
+                            <p class="search-hint" id="booking-hint" data-i18n="booking.hint">Choose a date and number of hours for your guided tour.</p>
+                            <button class="primary-button" type="submit" id="booking-submit">
+                                <span data-i18n="booking.confirm">Confirm Booking</span>
+                                <i class="ri-calendar-check-line"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </dialog>
+        </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js" integrity="sha512-f8mwTB+Bs8a5c46DEm7HQLcJuHMBaH/UFlcgyetMqqkvTcYg4g5VXsYR71b3qC82lZytjNYvBj2pf0VekA9/FQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js" integrity="sha512-A64Nik4Ql7/W/PJk2RNOmVyC/Chobn5TY08CiKEX50Sdw+33WTOpPJ/63bfWPl0hxiRv1trPs5prKO8CpA7VNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" integrity="sha512-RX/OFugt/bkgwRQg4B22KYE79dQhwaPp2IZaA/YyU3GMo/qY7GrXkiG6Dvvwnds6/DefCfwPTgCXnaC6nAgVYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script>
-
-    <script  type="text/javascript"  src="https://unpkg.com/sheryjs/dist/Shery.js"></script> <!-- Recommended -->
-<script src="./page1.js"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
 </body>
+
 </html>

@@ -1,0 +1,108 @@
+name: full-tests
+
+on:
+  push:
+    tags: [ test-run ]
+
+permissions:
+  contents: read
+
+jobs:
+  full-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+
+      - name: Write .env from secret
+        run: |
+          cat > .env <<'__APP_ENV__'
+          ${{ secrets.WEB_ENV }}
+          __APP_ENV__
+
+      - name: Post "started" comment
+        id: comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const { data } = await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: `🧪 **Full test suite running** — tag \`test-run\`\n\nLive integration + network tests against real providers.\n\n[View run](${runUrl}) · started at ${new Date().toISOString()}`,
+            });
+            core.setOutput('id', data.id);
+
+      - name: Run full suite (integration + network)
+        id: tests
+        continue-on-error: true
+        env:
+          RUN_INTEGRATION: "1"
+        run: |
+          set -o pipefail
+          pytest -q --junitxml=report.xml | tee pytest-output.txt
+
+      - name: Update comment with report
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const outcome = '${{ steps.tests.outcome }}';
+            const ok = outcome === 'success';
+
+            let stats = { tests: 0, failures: 0, errors: 0, skipped: 0, time: 0 };
+            try {
+              const xml = fs.readFileSync('report.xml', 'utf8');
+              const grab = (k) => {
+                const m = xml.match(new RegExp(`<testsuites?[^>]*\\b${k}="(\\d+(?:\\.\\d+)?)"`));
+                return m ? Number(m[1]) : 0;
+              };
+              stats = {
+                tests: grab('tests'), failures: grab('failures'),
+                errors: grab('errors'), skipped: grab('skipped'), time: grab('time'),
+              };
+            } catch (e) { core.warning('Could not parse report.xml: ' + e.message); }
+
+            const passed = Math.max(0, stats.tests - stats.failures - stats.errors - stats.skipped);
+            const header = ok ? '✅ **Full test suite passed**' : '❌ **Full test suite failed**';
+            let tail = '';
+            try {
+              const raw = fs.readFileSync('pytest-output.txt', 'utf8').trim().split('\n');
+              tail = raw.slice(-15).join('\n');
+            } catch (e) {}
+
+            const body = [
+              `${header} — tag \`test-run\``,
+              '',
+              `| passed | failed | errors | skipped | total | time |`,
+              `| --- | --- | --- | --- | --- | --- |`,
+              `| ${passed} | ${stats.failures} | ${stats.errors} | ${stats.skipped} | ${stats.tests} | ${stats.time}s |`,
+              '',
+              tail ? `<details><summary>pytest tail</summary>\n\n\`\`\`\n${tail}\n\`\`\`\n</details>` : '',
+              '',
+              `[View full run](${runUrl}) · finished at ${new Date().toISOString()}`,
+            ].join('\n');
+
+            await github.rest.repos.updateCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: Number('${{ steps.comment.outputs.id }}'),
+              body,
+            });
+
+      - name: Fail job if tests failed
+        if: steps.tests.outcome != 'success'
+        run: exit 1

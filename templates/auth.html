@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title.auth">BharatBhraman - Authentication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+</head>
+<body data-page="auth">
+    <div class="page-shell">
+        <header class="site-header">
+            <nav class="nav-bar">
+                <a class="brand" href="/">
+                    <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                    <span class="brand-tag" data-i18n="brand.tagAuth">Authentication</span>
+                </a>
+                <button class="nav-toggle" type="button" aria-label="Toggle menu" data-nav-toggle>
+                    <i class="ri-menu-3-line"></i>
+                </button>
+                <div class="nav-links" data-nav-panel>
+                    <a href="/" data-i18n="nav.planner">Planner</a>
+                    <a href="/results" data-i18n="nav.results">Results</a>
+                    <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                    <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="auth-main">
+            <div class="auth-card">
+                <aside class="auth-aside">
+                    <span class="auth-aside__orb auth-aside__orb--a"></span>
+                    <span class="auth-aside__orb auth-aside__orb--b"></span>
+                    <div class="auth-aside__brand">Bhara<span>tभ्रमण</span></div>
+                    <p class="auth-aside__lead" data-i18n="auth.asideLead">Plan smarter journeys across India — save trips, book local guides, and pick up right where you left off.</p>
+                    <ul class="auth-aside__points">
+                        <li><i class="ri-bookmark-line"></i> <span data-i18n="auth.asidePoint1">Save and reopen your trips</span></li>
+                        <li><i class="ri-map-pin-user-line"></i> <span data-i18n="auth.asidePoint2">Book verified local guides</span></li>
+                        <li><i class="ri-sparkling-2-line"></i> <span data-i18n="auth.asidePoint3">Chat with your AI trip assistant</span></li>
+                    </ul>
+                </aside>
+                <div class="auth-panel">
+                <div class="section-heading">
+                    <p class="eyebrow" id="auth-eyebrow" data-i18n="auth.welcomeBack">Welcome Back</p>
+                    <h2 id="auth-title" data-i18n="auth.loginTitle">Login to your account</h2>
+                </div>
+
+                <div class="mode-switch" id="auth-mode-switch" role="group" aria-label="Authentication mode">
+                    <button class="mode-switch__button is-active" type="button" data-mode="login" aria-pressed="true" data-i18n="auth.login">Login</button>
+                    <button class="mode-switch__button" type="button" data-mode="register" aria-pressed="false" data-i18n="auth.register">Register</button>
+                </div>
+
+                <form class="trip-form" id="auth-form">
+                    <label class="field" id="name-field" style="display: none;">
+                        <span data-i18n="auth.fullName">Full Name</span>
+                        <input type="text" id="auth-name" placeholder="E.g., Priya Patel" data-i18n-placeholder="auth.namePlaceholder">
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="auth.email">Email Address</span>
+                        <input type="email" id="auth-email" required placeholder="E.g., traveler@example.com" data-i18n-placeholder="auth.emailPlaceholder">
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="auth.password">Password</span>
+                        <input type="password" id="auth-password" required placeholder="Enter your password" data-i18n-placeholder="auth.passwordPlaceholder">
+                    </label>
+
+                    <p class="form-note form-note--error" id="auth-note" role="alert" hidden></p>
+
+                    <div class="search-actions" style="margin-top: 10px; flex-direction: column; align-items: stretch;">
+                        <button class="primary-button" id="auth-submit" type="submit" style="justify-content: center;">
+                            <span id="auth-btn-text" data-i18n="auth.login">Login</span>
+                            <i class="ri-arrow-right-line"></i>
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+</body>
+</html>
