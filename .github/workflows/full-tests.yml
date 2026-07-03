@@ -1,17 +1,17 @@
 name: full-tests
 
 on:
-  push:
-    tags: [ test-run ]
+  pull_request:
+    types: [labeled]
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   full-tests:
+    if: github.event.label.name == 'test-run'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -36,11 +36,11 @@ jobs:
         with:
           script: |
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const { data } = await github.rest.repos.createCommitComment({
+            const { data } = await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: `🧪 **Full test suite running** — tag \`test-run\`\n\nLive integration + network tests against real providers.\n\n[View run](${runUrl}) · started at ${new Date().toISOString()}`,
+              issue_number: context.issue.number,
+              body: `🧪 **Full test suite running** — label \`test-run\`\n\nLive integration + network tests against real providers.\n\n[View run](${runUrl})`,
             });
             core.setOutput('id', data.id);
 
@@ -60,8 +60,7 @@ jobs:
           script: |
             const fs = require('fs');
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const outcome = '${{ steps.tests.outcome }}';
-            const ok = outcome === 'success';
+            const ok = '${{ steps.tests.outcome }}' === 'success';
 
             let stats = { tests: 0, failures: 0, errors: 0, skipped: 0, time: 0 };
             try {
@@ -80,12 +79,11 @@ jobs:
             const header = ok ? '✅ **Full test suite passed**' : '❌ **Full test suite failed**';
             let tail = '';
             try {
-              const raw = fs.readFileSync('pytest-output.txt', 'utf8').trim().split('\n');
-              tail = raw.slice(-15).join('\n');
+              tail = fs.readFileSync('pytest-output.txt', 'utf8').trim().split('\n').slice(-15).join('\n');
             } catch (e) {}
 
             const body = [
-              `${header} — tag \`test-run\``,
+              `${header} — label \`test-run\``,
               '',
               `| passed | failed | errors | skipped | total | time |`,
               `| --- | --- | --- | --- | --- | --- |`,
@@ -93,15 +91,29 @@ jobs:
               '',
               tail ? `<details><summary>pytest tail</summary>\n\n\`\`\`\n${tail}\n\`\`\`\n</details>` : '',
               '',
-              `[View full run](${runUrl}) · finished at ${new Date().toISOString()}`,
+              `[View full run](${runUrl})`,
             ].join('\n');
 
-            await github.rest.repos.updateCommitComment({
+            await github.rest.issues.updateComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               comment_id: Number('${{ steps.comment.outputs.id }}'),
               body,
             });
+
+      - name: Remove label to allow re-runs
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'test-run',
+              });
+            } catch (e) { core.info('Label already gone: ' + e.message); }
 
       - name: Fail job if tests failed
         if: steps.tests.outcome != 'success'
