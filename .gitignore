@@ -175,4 +175,4 @@ ISSUES.md
 
 # Internal coverage-sweep artifacts
 docs/coverage/
-scripts/
+/scripts/
