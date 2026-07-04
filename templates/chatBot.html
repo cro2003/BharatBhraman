@@ -3,158 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chatbot.css') }}">
+    <title data-i18n="title.chat">BharatBhraman AI Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 </head>
-<body>
-    <header id="header">
-        <nav class="neumorphic-nav">
-          <div class="logo">
-            <h3 id="bb-logo">Bhara<span>tभ्र</span>मण</h3>
-          </div>
-        <div id="nav-c">
-          <a id="home" href="/" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-home-fill" ></i>{{ pageLang["translatedData"]["home"] }}</a>
-            <a id="flight" class="buy" data-tilt data-tilt-scale="1.08" href="#"><i class="ri-flight-takeoff-line"></i>{{ pageLang["translatedData"]["flight"] }}</a>
-            <a id="train" href="#" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-train-fill"></i>{{ pageLang["translatedData"]["train"] }}</a>
-            <a id="hotel" class="buy" data-tilt data-tilt-scale="1.08"href="/guide"><i class="ri-group-line"></i>{{ pageLang["translatedData"]["hotel"] }}</a>
-          <a id="multi-destination" href="/chat" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-chat-1-fill"></i>{{ pageLang["translatedData"]["multi-destination"] }}</a>
-        </div>
-          <div id="logo-part2">
-              <div class="form-group">
-          <select id="language" placeholder="language"   name="language" required  class="buy" data-tilt data-tilt-scale="1.02">
-            <option selected value="{{ pageLang["language"] }}">{{ pageLang["codeToLang"][pageLang["language"]] }}</option>
-            {% for languages in supportedLanguage %}
-                {% if supportedLanguage[languages]== pageLang["language"] %}
-                {% else %}
-                <option value="{{ supportedLanguage[languages] }}">{{ languages }}</option>
-                {% endif %}
-            {% endfor %}
-          </select>
-        </div>
-
-
-            <a href="/add-guide" id="login" class="login" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-user-fill"></i>{{ pageLang["translatedData"]["login"] }}</a>
-          </div>
-
-
-        </nav>
-      </header>
-
-    <section class="msger">
-        <header class="msger-header">
-          <div class="msger-header-title">
-            <i class="fas fa-comment-alt"></i> Chat Bot Powered by Gemini Pro
-          </div>
-          <div class="msger-header-options">
-            <span><i class="fas fa-cog"></i></span>
-          </div>
-
+<body data-page="chat">
+    <div class="page-shell page-shell--chat">
+        <header class="site-header">
+            <nav class="nav-bar">
+                <a class="brand" href="/">
+                    <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                    <span class="brand-tag" data-i18n="brand.tagChat">AI Travel Guide</span>
+                </a>
+                <button class="nav-toggle" type="button" aria-label="Toggle menu" data-nav-toggle>
+                    <i class="ri-menu-3-line"></i>
+                </button>
+                <div class="nav-links" data-nav-panel>
+                    <a href="/" data-i18n="nav.planner">Planner</a>
+                    <a href="/results" data-i18n="nav.results">Results</a>
+                    <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                    <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                    {% if session.get('is_logged_in') %}
+                    <a href="/dashboard" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="#" data-action="logout" style="color: var(--danger);" data-i18n="nav.logout">Logout</a>
+                    {% else %}
+                    <a href="/auth" style="font-weight: 700;" data-i18n="nav.login">Login / Register</a>
+                    {% endif %}
+                </div>
+                <div class="nav-actions">
+                    <button class="nav-cta" type="button" id="chat-use-trip-context" data-i18n="chatpage.useContext">Use latest trip context</button>
+                </div>
+            </nav>
         </header>
 
-        <main class="msger-chat">
-          <div class="msg left-msg">
-            <div class="msg-img" style="background-image: url(https://i.pinimg.com/originals/23/7e/7d/237e7dfccfe9c019bf148855aec83c11.gif)"></div>
-
-            <div class="msg-bubble">
-              <div class="msg-info">
-                <div class="msg-info-name">BOT</div>
-                <div class="msg-info-time">12:45</div>
-              </div>
-
-              <div class="msg-text">
-                Hi, welcome to Bharat Bhraman! Go Ahead & Askm me about your Travel Itinerary. 😄
-              </div>
-            </div>
-          </div>
-        </main>
-
-        <div class="msger-inputarea">
-          <input type="text" class="msger-input" placeholder="Enter your message...">
-          <button type="button" class="msger-send-btn" onclick="handleButtonClick()">Send</button>
-        </div>
-        <script>
-            const msgerForm = get(".msger-inputarea");
-            const msgerInput = get(".msger-input");
-            const msgerChat = get(".msger-chat");
-            var lang;
-            const dropdown = document.getElementById('language');
-            dropdown.addEventListener('change', (event) => {
-                lang = event.target.value;
-            });
-
-            // Icons made by Freepik from www.flaticon.com
-            const BOT_IMG = "https://i.pinimg.com/originals/23/7e/7d/237e7dfccfe9c019bf148855aec83c11.gif";
-            const PERSON_IMG = "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg?t=st=1709990264~exp=1709993864~hmac=18bd8ea9c243b268da5f4b62cfcbae77c1868c3a8ed1985ef4429c69d1f3f0f1&w=740";
-            const BOT_NAME = "BOT";
-            const PERSON_NAME = "Chirag";
-            function handleButtonClick() {
-              console.log("REQ DONE")
-                event.preventDefault();
-
-              const msgText = msgerInput.value;
-              if (!msgText) return;
-
-              appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-              msgerInput.value = "";
-              botResponse(msgText, lang);
-            }
-
-            function appendMessage(name, img, side, text) {
-              const msgHTML = `
-                <div class="msg ${side}-msg">
-                  <div class="msg-img" style="background-image: url(${img})"></div>
-
-                  <div class="msg-bubble">
-                    <div class="msg-info">
-                      <div class="msg-info-name">${name}</div>
-                      <div class="msg-info-time">${formatDate(new Date())}</div>
-                    </div>
-
-                    <div class="msg-text">${text}</div>
-                  </div>
+        <main class="chat-page">
+            <section class="chat-hero">
+                <div>
+                    <p class="eyebrow" data-i18n="chatpage.eyebrow">Trip assistance</p>
+                    <h1 data-i18n="chatpage.title">Ask BharatBhraman anything about your route, destination, or itinerary.</h1>
+                    <p class="hero-text" data-i18n="chatpage.heroText">
+                        The chat can use your latest search context, itinerary hints, and destination details to answer
+                        questions more precisely than the old page.
+                    </p>
                 </div>
-              `;
+                <aside class="chat-context-card">
+                    <p class="panel-kicker" data-i18n="chatpage.contextKicker">Trip context</p>
+                    <textarea id="chat-context" rows="8" placeholder="Optional context about your trip, destination, budget, or selected travel plan." data-i18n-placeholder="chatpage.contextPlaceholder"></textarea>
+                    <div class="chat-context-card__chips">
+                        <button type="button" class="ghost-button" data-chat-prompt="Suggest a 2-day itinerary for this trip." data-i18n="chatpage.chip2day">2-day plan</button>
+                        <button type="button" class="ghost-button" data-chat-prompt="What should I pack for this trip?" data-i18n="chatpage.chipPacking">Packing help</button>
+                        <button type="button" class="ghost-button" data-chat-prompt="Recommend local food and evening spots." data-i18n="chatpage.chipFood">Local food</button>
+                    </div>
+                </aside>
+            </section>
 
-              msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-              msgerChat.scrollTop += 500;
-            }
+            <section class="chat-shell">
+                <div class="chat-thread" id="chat-thread">
+                    <article class="chat-message chat-message--bot">
+                        <div class="chat-avatar"><i class="ri-sparkling-2-line"></i></div>
+                        <div class="chat-bubble">
+                            <p class="chat-author">BharatBhraman Guru</p>
+                            <p data-i18n="chatpage.greeting">Hello. Ask about routes, stay decisions, attraction planning, food, timing, or trip tradeoffs.</p>
+                        </div>
+                    </article>
+                </div>
 
-            function botResponse(userText, lang) {
+                <form class="chat-composer" id="chat-form">
+                    <label class="field field--full">
+                        <span data-i18n="chatpage.yourQuestion">Your question</span>
+                        <textarea id="chat-input" rows="3" placeholder="Example: Is train better than flight for this route if I want to save money?" data-i18n-placeholder="chatpage.questionPlaceholder"></textarea>
+                    </label>
+                    <div class="chat-composer__actions">
+                        <p class="search-hint" data-i18n="chatpage.hint">Answers are tailored to your trip context when provided.</p>
+                        <button class="primary-button" type="submit" id="chat-submit">
+                            <span data-i18n="chat.send">Send</span>
+                            <i class="ri-send-plane-2-line"></i>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
 
-              // Make AJAX request to Flask server
-              $.ajax({
-                url: '/get',
-                data: { msg: userText, lang: lang },
-                success: function(response) {
-                  const msgText = response;
-                  const delay = 0;
-
-                  setTimeout(() => {
-                    appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-                  }, delay);
-                }
-              });
-            }
-
-            // Utils
-            function get(selector, root = document) {
-              return root.querySelector(selector);
-            }
-
-            function formatDate(date) {
-              const h = "0" + date.getHours();
-              const m = "0" + date.getMinutes();
-
-              return `${h.slice(-2)}:${m.slice(-2)}`;
-            }
-
-            function random(min, max) {
-              return Math.floor(Math.random() * (max - min) + min);
-            }
-
-        </script>
-      </section>
-<link rel="stylesheet" href="{{ url_for('static', filename='scripts/chatBot.js') }}">
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
 </body>
 </html>

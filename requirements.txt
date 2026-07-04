@@ -1,4 +1,5 @@
 bs4
+certifi
 requests
 flask
 json_repair
@@ -10,3 +11,8 @@ gunicorn
 google-generativeai
 lxml
 pymongo
+Flask-Session
+bcrypt
+langchain
+langchain-google-genai
+langchain-core

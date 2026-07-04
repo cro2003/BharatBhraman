@@ -1,0 +1,18 @@
+services:
+  web:
+    ports: !reset []
+    environment:
+      - SESSION_COOKIE_SECURE=true
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.bharatbhraman.rule=Host(`${BB_DOMAIN}`)
+      - traefik.http.routers.bharatbhraman.entrypoints=websecure
+      - traefik.http.routers.bharatbhraman.tls.certresolver=le
+      - traefik.http.services.bharatbhraman.loadbalancer.server.port=8000
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

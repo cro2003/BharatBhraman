@@ -3,392 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <title data-i18n="title.home">BharatBhraman</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
-    <script>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                alert("{{ messages[0] }}");
-            {% endif %}
-        {% endwith %}
-    </script>
 </head>
-<body>
-  <header id="header">
-    <nav class="neumorphic-nav">
-      <div class="logo">
-        <h3 id="bb-logo">Bhara<span>tभ्र</span>मण</h3>
-      </div>
-    <div id="nav-c">
-      <a id="home" href="/" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-home-fill" ></i>{{ pageLang["translatedData"]["home"] }}</a>
-        <a id="flight" class="buy" data-tilt data-tilt-scale="1.08" href="/#"><i class="ri-flight-takeoff-line"></i>{{ pageLang["translatedData"]["flight"] }}</a>
-        <a id="train" href="/#" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-train-fill"></i>{{ pageLang["translatedData"]["train"] }}</a>
-        <a id="hotel" class="buy" data-tilt data-tilt-scale="1.08"href="/guide"><i class="ri-group-line"></i>{{ pageLang["translatedData"]["hotel"] }}</a>
-      <a id="multi-destination" href="/chat" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-chat-1-fill"></i>{{ pageLang["translatedData"]["multi-destination"] }}</a>
-    </div>
-      <div id="logo-part2">
-          <div class="form-group">
-      <select id="language" placeholder="language"   name="language" required  class="buy" data-tilt data-tilt-scale="1.02">
-        <option selected value="{{ pageLang["language"] }}">{{ pageLang["codeToLang"][pageLang["language"]] }}</option>
-        {% for languages in supportedLanguage %}
-            {% if supportedLanguage[languages]== pageLang["language"] %}
-            {% else %}
-            <option value="{{ supportedLanguage[languages] }}">{{ languages }}</option>
-            {% endif %}
-        {% endfor %}
-      </select>
-    </div>
+<body data-page="home">
+<div class="page-shell">
+    <header class="site-header">
+        <nav class="nav-bar">
+            <a class="brand" href="/">
+                <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                <span class="brand-tag" data-i18n="brand.tagHome">AI Trip Planner</span>
+            </a>
+            <button class="nav-toggle" type="button" aria-label="Toggle menu" data-nav-toggle>
+                <i class="ri-menu-3-line"></i>
+            </button>
+            <div class="nav-links" data-nav-panel>
+                <a href="#planner" data-i18n="nav.planner">Planner</a>
+                <a href="#destinations" data-i18n="nav.quickpicks">Quick Picks</a>
+                <a href="#how-it-works" data-i18n="nav.howItWorks">How It Works</a>
+                <a href="/results" data-i18n="nav.results">Results</a>
+                <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                {% if session.get('is_logged_in') %}
+                <a href="/dashboard" data-i18n="nav.dashboard">Dashboard</a>
+                <a href="#" data-action="logout" style="color: var(--danger);" data-i18n="nav.logout">Logout</a>
+                {% else %}
+                <a href="/auth" style="font-weight: 700;" data-i18n="nav.login">Login / Register</a>
+                {% endif %}
+            </div>
+            <div class="nav-actions">
+                <select class="language-select" id="language-select" aria-label="Select language">
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Marathi">Marathi</option>
+                    <option value="Gujarati">Gujarati</option>
+                    <option value="Tamil">Tamil</option>
+                    <option value="Kannada">Kannada</option>
+                </select>
+                <a class="nav-cta" href="#planner" data-i18n="nav.planTrip">Plan Trip</a>
+            </div>
+        </nav>
+    </header>
 
-
-        <a href="/add-guide" id="login" class="login" class="buy" data-tilt data-tilt-scale="1.08"><i class="ri-user-fill"></i>{{ pageLang["translatedData"]["login"] }}</a>
-      </div>
-
-
-    </nav>
-  </header>
-  <!-- <div id="circl"></div> -->
-
-    <div id="main">
-
-        <div id="page1">
-
-               <img id="page1image"src="{{ url_for('static', filename='images/index_flightIcon.jpg') }}" alt="" srcset="">
-              <div id="center">
-              <div id="right">
-                <h1 id="right_h1">{{ pageLang["translatedData"]["right_h1"] }}</h1>
-
-                <div id="gooey">
-
+    <main>
+        <section class="hero" id="planner">
+            <div class="hero-backdrop">
+                <div class="hero-orb hero-orb-primary"></div>
+                <div class="hero-orb hero-orb-secondary"></div>
+                <div class="hero-grid"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-copy">
+                    <p class="eyebrow" data-i18n="hero.eyebrow">Multilingual trip planning for India</p>
+                    <h1 data-i18n="hero.title">Plan your perfect Indian journey with AI-powered live search.</h1>
+                    <p class="hero-text" data-i18n="hero.text">
+                        Search flights, trains, stays, and destination ideas in one place. Use quick picks for instant
+                        bundles
+                        or manual mode when you want to choose each segment yourself.
+                    </p>
+                    <div class="hero-highlights">
+                        <div class="highlight-pill"><i class="ri-flight-takeoff-line"></i> <span data-i18n="pill.flights">Flights</span></div>
+                        <div class="highlight-pill"><i class="ri-train-line"></i> <span data-i18n="pill.trains">Trains</span></div>
+                        <div class="highlight-pill"><i class="ri-hotel-bed-line"></i> <span data-i18n="pill.hotels">Hotels</span></div>
+                        <div class="highlight-pill"><i class="ri-map-pin-2-line"></i> <span data-i18n="pill.itinerary">AI Itinerary</span></div>
+                    </div>
                 </div>
-                <div class="container">
-                    <div class="switches-container">
-                      <input type="radio" id="switchMonthly" name="switchPlan" value="Customise own" checked="checked" />
-                      <input type="radio" id="switchYearly" name="switchPlan" value="Quick picks" />
-                      <label for="switchMonthly" onclick="pqr()">{{ pageLang["translatedData"]["quickPicks"] }}</label>
-                      <label for="switchYearly" onclick="abcd()">{{ pageLang["translatedData"]["custom"] }}</label>
-                      <div class="switch-wrapper">
-                        <div class="switch">
-                          <div>{{ pageLang["translatedData"]["quickPicks"] }}</div>
-                          <div>{{ pageLang["translatedData"]["custom"] }}</div>
+
+                <section class="search-panel">
+                    <div class="search-panel-header">
+                        <div>
+                            <p class="panel-kicker" data-i18n="panel.kicker">Trip Modes</p>
+                            <h2 data-i18n="panel.title">Search Your Journey</h2>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                <form action="/quick-pick" method="post">
-
-
-                <div class="neumorphic-box" id="neumorphic-box">
-                    <div class="section1" >
-                      <input type="text" list="from-cities"
-                      id="from" name="from" placeholder="{{ pageLang["translatedData"]["from"] }}" />
-            <datalist id="from-cities">
-                {% for cities in pageLang["translatedData"]["from-cities"] %}
-                    <option value="{{ cities }}">{{ cities }}</option>
-                {% endfor %}
-               </datalist>
+                        <span class="panel-chip travel-reel" id="travel-reel" aria-live="polite">
+                            <span class="travel-reel__track" aria-hidden="true">
+                                <i class="ri-flight-takeoff-line"></i>
+                                <i class="ri-train-line"></i>
+                                <i class="ri-hotel-line"></i>
+                                <i class="ri-sparkling-2-line"></i>
+                            </span>
+                            <span class="travel-reel__label" data-i18n="panel.chip">Live travel search</span>
+                        </span>
                     </div>
 
-                    <div class="section1" >
-                      <input type="text" list="to-cities"
-                      id="to" name="to" placeholder="{{ pageLang["translatedData"]["to"] }}" >
-            <datalist id="to-cities">
-                {% for cities in pageLang["translatedData"]["to-cities"] %}
-                    <option value="{{ cities }}">{{ cities }}</option>
-                {% endfor %}
-               </datalist>
-                    </div>
-                    <div class="section1" >
-                        <input type="text" list="choose-options"
-                        id="select" name="select" placeholder="{{ pageLang["translatedData"]["prfrnce"] }}" />
-              <datalist id="choose-options">
-                  {% for cities in pageLang["translatedData"]["prfrnceList"] %}
-                      <option value="{{ cities }}">{{ cities }}</option>
-                  {% endfor %}
-                 </datalist>
-                      </div>
-<!--                      <div class="section">-->
-<!--                        <input type="number" id="budget" name="budget" placeholder="budget">-->
-<!--                      </div>-->
-                    <div class="section">
-                      <input type="date" id="date" name="date">
+                    <div class="mode-switch" role="group" aria-label="Planning mode">
+                        <button class="mode-switch__button is-active" type="button" data-mode="quickpick" aria-pressed="true" data-i18n="mode.quickpicks">Quick Picks
+                        </button>
+                        <button class="mode-switch__button" type="button" data-mode="manual" aria-pressed="false" data-i18n="mode.manual">Manual Mode</button>
                     </div>
 
-                    <div class="section" id="section3">
-                      <button id="submit" name="submit">{{ pageLang["translatedData"]["submit"] }}</button>
-                    <input hidden name="selectedLang" id="selectedLang" value="{{ pageLang["language"] }}">
-                        <input hidden name="reqType" id="reqType" value="choosePlan">
+                    <form id="trip-search-form" class="trip-form">
+                        <input type="hidden" name="selectionMode" value="quickpick">
+                        <div class="form-grid">
+                            <label class="field">
+                                <span data-i18n="form.from">From</span>
+                                <input type="text" name="origin" id="origin-input" placeholder="Delhi, Mumbai, Dubai"
+                                       data-i18n-placeholder="form.fromPlaceholder" autocomplete="off" required>
+                                <div class="typeahead" id="origin-suggestions"></div>
+                            </label>
+
+                            <label class="field">
+                                <span data-i18n="form.to">To</span>
+                                <input type="text" name="destination" id="destination-input"
+                                       placeholder="Jaipur, Udaipur, Varanasi" data-i18n-placeholder="form.toPlaceholder" autocomplete="off" required>
+                                <div class="typeahead" id="destination-suggestions"></div>
+                            </label>
+
+                            <label class="field">
+                                <span data-i18n="form.date">Departure Date</span>
+                                <input type="date" name="date" id="date-input" required>
+                            </label>
+
+                            <label class="field field--preference">
+                                <span data-i18n="form.preference">Preference</span>
+                                <select name="preferences" id="preferences-input">
+                                    <option value="Comfort" data-i18n="pref.comfort">Comfort</option>
+                                    <option value="Budget" data-i18n="pref.budget">Budget</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="search-actions">
+                            <p class="search-hint" id="search-hint" data-i18n="form.hint">
+                                Quick picks automatically bundle the best travel combination for the chosen preference.
+                            </p>
+                            <button class="primary-button" id="search-submit" type="submit">
+                                <span data-i18n="form.search">Search Trip</span>
+                                <i class="ri-arrow-right-line"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="search-status" id="search-status" hidden>
+                        <div class="search-status__header">
+                            <div>
+                                <p class="panel-kicker" data-i18n="status.kicker">Search Status</p>
+                                <h3 id="status-title" data-i18n="status.preparing">Preparing your trip</h3>
+                            </div>
+                            <span class="status-chip" id="status-chip" data-i18n="status.connecting">Connecting</span>
+                        </div>
+                        <div class="progress-bar">
+                            <span id="status-progress-bar"></span>
+                            <i class="ri-flight-takeoff-line progress-bar__flyer" aria-hidden="true"></i>
+                        </div>
+                        <div class="trip-loader" aria-hidden="true">
+                            <span class="trip-loader__icon"><i class="ri-flight-takeoff-line"></i></span>
+                            <span class="trip-loader__icon"><i class="ri-train-line"></i></span>
+                            <span class="trip-loader__icon"><i class="ri-hotel-line"></i></span>
+                            <span class="trip-loader__icon"><i class="ri-sparkling-2-line"></i></span>
+                        </div>
+                        <p id="status-message" data-i18n="status.resolving">Resolving cities, airports, and live travel options.</p>
                     </div>
-                  </form>
-                </div>
+                </section>
+            </div>
+        </section>
 
-
-                <form action="/plan-trip" method="post">
-                <div class="neumorphic-box" id="neumorphic-box1">
-                    <div class="section1" >
-                      <input type="text" list="from-cities"
-                      id="from" name="from" placeholder="{{ pageLang["translatedData"]["from"] }}" />
-            <datalist id="from-cities">
-                {% for cities in pageLang["translatedData"]["from-cities"] %}
-                    <option value="{{ cities }}">{{ cities }}</option>
-                {% endfor %}
-               </datalist>
+        <section class="destinations-section" id="destinations">
+            <div class="section-heading">
+                <p class="eyebrow" data-i18n="destinations.eyebrow">Popular quick picks</p>
+                <h2 data-i18n="destinations.title">Travel ideas people can start from immediately</h2>
+            </div>
+            <div class="destination-grid" id="destination-grid" data-reveal data-reveal-group>
+                <article class="destination-card">
+                    <img src="https://s7ap1.scene7.com/is/image/incredibleindia/gateway-of-india-mumbai-maharashtra-2-attr-hero?qlt=82&ts=1742162842869"
+                         alt="Gateway of India in Mumbai">
+                    <div class="destination-card__body">
+                        <p data-i18n="dest.mumbai">Mumbai</p>
+                        <h3 data-i18n="dest.mumbaiDesc">Food, coastlines, and late-night city energy</h3>
+                        <button type="button" class="ghost-button" data-fill-destination="Mumbai" data-i18n="card.useDestination">Use as destination
+                        </button>
                     </div>
-
-                    <div class="section1" >
-                      <input type="text" list="to-cities"
-                      id="to" name="to" placeholder="{{ pageLang["translatedData"]["to"] }}" >
-            <datalist id="to-cities">
-                {% for cities in pageLang["translatedData"]["to-cities"] %}
-                    <option value="{{ cities }}">{{ cities }}</option>
-                {% endfor %}
-               </datalist>
+                </article>
+                <article class="destination-card">
+                    <img src="https://static.wixstatic.com/media/ed75e9_a632f4cd3b5444549d4a4f12be78f530~mv2_d_3119_2079_s_2.jpg/v1/fill/w_2500,h_1666,al_c/ed75e9_a632f4cd3b5444549d4a4f12be78f530~mv2_d_3119_2079_s_2.jpg"
+                         alt="Boat on Kerala backwaters">
+                    <div class="destination-card__body">
+                        <p data-i18n="dest.kerala">Kerala</p>
+                        <h3 data-i18n="dest.keralaDesc">Backwaters, slow routes, and comfort-first escapes</h3>
+                        <button type="button" class="ghost-button" data-fill-destination="Kerala" data-i18n="card.useDestination">Use as destination
+                        </button>
                     </div>
-
-
-                    <div class="section">
-                      <input type="date" id="date" name="date">
+                </article>
+                <article class="destination-card">
+                    <img src="https://s7ap1.scene7.com/is/image/incredibleindia/city-palace-jaipur-rajasthan-1?qlt=82&ts=1742164664970"
+                         alt="Jaipur city palace">
+                    <div class="destination-card__body">
+                        <p data-i18n="dest.jaipur">Jaipur</p>
+                        <h3 data-i18n="dest.jaipurDesc">Historic forts, city bazaars, and weekend planning</h3>
+                        <button type="button" class="ghost-button" data-fill-destination="Jaipur" data-i18n="card.useDestination">Use as destination
+                        </button>
                     </div>
-
-                    <div class="section" id="section3">
-                      <button id="submit" name="submit">{{ pageLang["translatedData"]["submit"] }}</button>
-                    <input hidden name="selectedLang" id="selectedLang" value="{{ pageLang["language"] }}">
-                        <input hidden name="reqType" id="reqType" value="choosePlan">
+                </article>
+                <article class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=900&q=80"
+                         alt="Taj Mahal in Agra">
+                    <div class="destination-card__body">
+                        <p data-i18n="dest.agra">Agra</p>
+                        <h3 data-i18n="dest.agraDesc">Classic itinerary building with rail-friendly travel</h3>
+                        <button type="button" class="ghost-button" data-fill-destination="Agra" data-i18n="card.useDestination">Use as destination
+                        </button>
                     </div>
-                  </form>
-                </div>
+                </article>
             </div>
-        <div id="left">
-             <img id="leftimage" src="https://i.pinimg.com/564x/d4/ec/0c/d4ec0c90971b03bbf0a750139d5cacc2.jpg" alt="">
-                </div>
+        </section>
 
-              </div>
-        </div>
-        <div id="page2">
-
-            <div id="circle">
-                <div class="stripe str7"><div class="first"> <div class="smcircle"></div> </div>
-                <div class="second">
-
-                   <a href="/Delhi" > <h2 id="delhi">{{ pageLang["translatedData"]["delhi"] }}</h2></a>
-
-                    <h4>01</h4>
-
-                </div>
-                <img class="image" id="image1"src="https://i.pinimg.com/564x/5c/6a/15/5c6a15c2698810da935ab4ffd878b63e.jpg" alt="" srcset="">
-
-
-
+        <section class="insights-section" id="how-it-works">
+            <div class="section-heading">
+                <p class="eyebrow" data-i18n="how.eyebrow">How this planner works</p>
+                <h2 data-i18n="how.title">Built for both fast decisions and detailed control</h2>
             </div>
-                <div class="stripe str0"><div class="first"> <div class="smcircle"></div> </div>
-                <div class="second">
-                    <a href="/Kerala" >
-                    <h2 id="kerala">{{ pageLang["translatedData"]["kerala"] }}</h2></a>
-                    <h4>02</h4>
-
-                </div>
-                <img class="image" id="image2"src="https://i.pinimg.com/236x/c0/07/5f/c0075ffb6458db5768f9985537555464.jpg" alt="">
+            <div class="insight-grid" data-reveal data-reveal-group>
+                <article class="insight-card">
+                    <span>01</span>
+                    <h3 data-i18n="insight.quickTitle">Quick Picks</h3>
+                    <p data-i18n="insight.quickText">Best for instant bundling. We compare flights, trains, hotels, and onward routes for
+                        you.</p>
+                </article>
+                <article class="insight-card">
+                    <span>02</span>
+                    <h3 data-i18n="insight.manualTitle">Manual Mode</h3>
+                    <p data-i18n="insight.manualText">Best for travelers who want to compare segments individually before committing the trip.</p>
+                </article>
+                <article class="insight-card">
+                    <span>03</span>
+                    <h3 data-i18n="insight.fallbackTitle">Smart fallback routing</h3>
+                    <p data-i18n="insight.fallbackText">When a destination is not a direct air hub, the planner can combine airport hub arrivals with
+                        train connections.</p>
+                </article>
             </div>
-            <div class="stripe str2"><div class="first"> <div class="smcircle"></div></div>
-            <div class="second">
-                <a href="/Mumbai" >
-                <h2 id="mumbai">{{ pageLang["translatedData"]["mumbai"] }}</h2></a>
-                <h4>03</h4>
-            </div>
-            <img class="image" id="image2"src="https://i.pinimg.com/236x/92/31/7b/92317ba54a6f432d19eb1ecda1045ae9.jpg" alt="">
+        </section>
+    </main>
+</div>
 
-        </div>
-        <div class="stripe str3"><div class="first"> <div class="smcircle"></div></div>
-        <div class="second">
-            <a href="/Jaipur" >
-            <h2 id="jaipur">{{ pageLang["translatedData"]["jaipur"] }}</h2></a>
-            <h4>04</h4>
-
-        </div>
-        <img class="image" id="image2"src="https://i.pinimg.com/736x/af/7f/86/af7f86a574d8e843a6cc6e84eda4ca71.jpg" alt="">
-
-    </div>
-                <div class="stripe str1"><div class="first"> <div class="smcircle"></div> </div>
-                <div class="second">
-                    <a href="/Agra" >
-                    <h2 id="agra">{{ pageLang["translatedData"]["agra"] }}</h2></a>
-                    <h4>05</h4>
-
-                </div>
-                <img class="image" id="image2"src="https://i.pinimg.com/564x/a7/1c/b6/a71cb6ea0827ce6991db703bbd7dd2bd.jpg" alt="">
-
-            </div>
-
-
-                <div class="stripe str4"><div class="first"> <div class="smcircle"></div></div>
-                <div class="second">
-                    <a href="/Kolkata" >
-                    <h2 id="kolkata">{{ pageLang["translatedData"]["kolkata"] }}</h2></a>
-                    <h4>06</h4>
-                </div>
-                <img class="image" id="image2"src="https://i.pinimg.com/236x/a2/c4/e5/a2c4e521211c3013d4c55dc634adaf84.jpg" alt="">
-
-            </div>
-                <div class="stripe str5"><div class="first"> <div class="smcircle"></div></div>
-                <div class="second">
-                    <a href="/Goa">
-                    <h2 id="goa">{{ pageLang["translatedData"]["goa"] }}</h2></a>
-                    <h4>07</h4>
-
-                </div>
-                <img class="image" id="image2"src="https://i.pinimg.com/236x/0c/d3/9d/0cd39df71f8306c9751fbc85b33df276.jpg" alt="">
-
-            </div>
-            <div class="stripe str6"><div class="first"> <div class="smcircle"></div></div>
-            <div class="second">
-                <a href="/Varanasi" >
-                    <h2 id="varanasi">{{ pageLang["translatedData"]["varanasi"] }}</h2>
-                </a>
-
-                <h4>08</h4>
-            </div>
-            <img class="image" id="image2"src="https://i.pinimg.com/564x/2d/ec/f0/2decf0d2566eb3c13d122171e4a19dbd.jpg" alt="">
-
-        </div>
-            </div>
-            <div id="sec">
-                <h1>{{ pageLang["translatedData"]["sec"][0] }}
-                    <br>{{ pageLang["translatedData"]["sec"][1] }}
-                <br>{{ pageLang["translatedData"]["sec"][2] }}
-                </h1>
-            </div>
-            <h1></h1>
-            <div id="panel">
-                <div class="mncircle" id="mn1"></div>
-                <div class="mncircle" id="mn2"></div>
-                <div class="mncircle" id="mn3"></div>
-                <div class="mncircle" id="mn4"></div>
-                <div class="mncircle" id="mn5"></div>
-                <div class="mncircle" id="mn6"></div>
-                 <div class="mncircle" id="mn7"></div>
-                 <div class="mncircle" id="mn8"></div>
-
-
-            </div>
-            <div id="sec1">
-                <h2 id="abc">{{ pageLang["translatedData"]["short-info-agra"] }}</h3>
-            </div>
-        </div>
-        <div id="page3" class="abc">
-          <div id="page3center">
-          <div id="page3left">
-           <h1 id="bhopal">{{ pageLang["translatedData"]["bhopal"] }}</h1>
-           <h3>{{ pageLang["translatedData"]["long-info-bhopal"] }}</h3>
-          </div>
-          <div id="page3right">
-           <div class="page3box" id="box1first">
-
-           </div>
-           <div class="page3box" id="box1second"></div>
-          </div>
-          </div>
-
-          </div>
-          <div id="page3">
-            <div id="page3center">
-
-            <div id="page3right">
-             <div class="page3box" id="box2first">
-
-             </div>
-             <div class="page3box" id="box2second"></div>
-            </div>
-            <div id="page3left" class="page3left1">
-              <h1 id="delhi">{{ pageLang["translatedData"]["delhi"] }}</h1>
-              <h3>{{ pageLang["translatedData"]["long-info-delhi"] }}</h3>
-             </div>
-            </div>
-
-
-            </div>
-            <footer>
-              <div class="footer">
-              <div class="row">
-              <a href="https://www.google.co.in/maps"><i class="ri-map-pin-line"></i></a>
-              <a href="https://www.olacabs.com/"><i class="ri-taxi-line"></i></a>
-              <a href="/home"><i class="ri-home-line"></i></a>
-              <a href="/flight"><i class="ri-flight-takeoff-line"></i></a>
-              <a href="/train"><i class="ri-train-line"></i></a>
-
-              </div>
-
-              <div class="row">
-              <ul>
-              <li><a href="#">Maps and directions</a></li>
-              <li><a href="#">Cab services</a></li>
-              <li><a href="#">Visit home</a></li>
-              <li><a href="#">Flights</a></li>
-              <li><a href="#">Trains</a></li>
-              </ul>
-              </div>
-              </div>
-              </footer>
-    <form name="languageSelector" id="languageSelector" action="/" method="post">
-          <input hidden name="selectedLang" id="lang" value="{{ pageLang["language"] }}">
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js" integrity="sha512-f8mwTB+Bs8a5c46DEm7HQLcJuHMBaH/UFlcgyetMqqkvTcYg4g5VXsYR71b3qC82lZytjNYvBj2pf0VekA9/FQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js" integrity="sha512-A64Nik4Ql7/W/PJk2RNOmVyC/Chobn5TY08CiKEX50Sdw+33WTOpPJ/63bfWPl0hxiRv1trPs5prKO8CpA7VNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" integrity="sha512-RX/OFugt/bkgwRQg4B22KYE79dQhwaPp2IZaA/YyU3GMo/qY7GrXkiG6Dvvwnds6/DefCfwPTgCXnaC6nAgVYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        const dropdown = document.getElementById('language');
-        dropdown.addEventListener('change', (event) => {
-            const selectedValue = event.target.value;
-            document.querySelector("#lang").value = selectedValue;
-            document.getElementById('languageSelector').submit(); //<form>
-        });
-        function myFunction() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-delhi"] }}"
-          }
-
-
-          document.getElementById("mn2").addEventListener("click", myFunction1);
-
-        function myFunction1() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-kerala"] }}"
-          }
-
-          document.getElementById("mn3").addEventListener("click", myFunction2);
-
-        function myFunction2() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-mumbai"] }}"
-          }
-
-          document.getElementById("mn4").addEventListener("click", myFunction4);
-
-        function myFunction4() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-jaipur"] }}"
-        }
-        document.getElementById("mn5").addEventListener("click", myFunction5);
-
-        function myFunction5() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-agra"] }}"
-        }
-
-        document.getElementById("mn6").addEventListener("click", myFunction6);
-
-        function myFunction6() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-kolkata"] }}"
-        }
-
-        document.getElementById("mn7").addEventListener("click", myFunction7);
-
-        function myFunction7() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-goa"] }}"
-        }
-
-        document.getElementById("mn8").addEventListener("click", myFunction8);
-
-        function myFunction8() {
-            document.getElementById("abc").innerHTML = "{{ pageLang["translatedData"]["short-info-varanasi"] }}"
-        }
-    </script>
-    <script src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
 </body>
 </html>

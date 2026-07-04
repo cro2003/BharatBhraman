@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="title.results">BharatBhraman Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/index.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body data-page="results">
+    <div class="page-shell page-shell--results">
+        <header class="site-header">
+            <nav class="nav-bar">
+                <a class="brand" href="/">
+                    <span class="brand-mark">Bhara<span>tभ्र</span>मण</span>
+                    <span class="brand-tag" data-i18n="brand.tagResults">Trip Results</span>
+                </a>
+                <div class="nav-links nav-links--static" data-nav-panel>
+                    <a href="/" data-i18n="nav.planner">Planner</a>
+                    <a href="/results" data-i18n="nav.results">Results</a>
+                    <a href="/guides" data-i18n="nav.guides">Local Guides</a>
+                    <a href="/chat" data-i18n="nav.assistant">Trip Assistant</a>
+                    {% if session.get('is_logged_in') %}
+                    <a href="/dashboard" data-i18n="nav.dashboard">Dashboard</a>
+                    <a href="#" data-action="logout" style="color: var(--danger);" data-i18n="nav.logout">Logout</a>
+                    {% else %}
+                    <a href="/auth" style="font-weight: 700;" data-i18n="nav.login">Login / Register</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
+
+        <main class="results-page">
+            <section class="results-hero">
+                <div>
+                    <p class="eyebrow" data-i18n="results.heroEyebrow">Your trip, planned</p>
+                    <h1 id="results-title" data-i18n="results.heroTitle">Trip options ready</h1>
+                    <p id="results-subtitle" data-i18n="results.subtitleCompare">Comparing flights, trains, hotels, and itinerary suggestions.</p>
+                </div>
+                <div class="results-actions" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                    <div class="mode-switch" style="margin: 0;" role="group" aria-label="Results view mode">
+                        <button class="mode-switch__button is-active" type="button" data-results-mode="quickpick" aria-pressed="true" data-i18n="results.modeQuick">Quick Pick</button>
+                        <button class="mode-switch__button" type="button" data-results-mode="manual" aria-pressed="false" data-i18n="results.modeManual">Customize</button>
+                    </div>
+                    <button class="primary-button" id="save-trip-btn" type="button" style="margin-left: auto;">
+                        <i class="ri-save-3-line"></i> <span data-i18n="results.saveTrip">Save Trip</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="quickpick-view">
+                <div class="journey-wrap" id="journey-timeline"></div>
+
+                <section class="itinerary-section">
+                    <div class="section-heading section-heading--compact">
+                        <p class="eyebrow" data-i18n="results.itineraryEyebrow">AI itinerary</p>
+                        <h2 data-i18n="results.itineraryTitle">Places to visit at your destination</h2>
+                    </div>
+                    <div class="itinerary-grid" id="itinerary-grid"></div>
+                </section>
+            </section>
+
+            <section id="customize-view" hidden>
+                <div class="wizard" id="wizard"></div>
+            </section>
+        </main>
+
+        <button class="trip-chat-launcher" id="trip-chat-toggle" type="button" aria-label="Open trip assistant" data-i18n-aria-label="chat.openAria" aria-expanded="false">
+            <i class="ri-message-3-line"></i>
+            <span data-i18n="chat.title">Trip Assistant</span>
+        </button>
+
+        <section class="trip-chat-widget" id="trip-chat-widget" hidden>
+            <div class="trip-chat-widget__header">
+                <div>
+                    <p class="eyebrow" data-i18n="chat.headerEyebrow">Planned trip assistant</p>
+                    <h2 data-i18n="chat.headerTitle">Ask about this trip</h2>
+                </div>
+                <div class="trip-chat-widget__tools">
+                    <button class="trip-chat-widget__clear" id="trip-chat-clear" type="button" aria-label="Clear chat history" data-i18n-aria-label="chat.clearAria">
+                        <i class="ri-delete-bin-line"></i> <span data-i18n="chat.clear">Clear</span>
+                    </button>
+                    <button class="trip-chat-widget__close" id="trip-chat-close" type="button" aria-label="Close trip assistant" data-i18n-aria-label="chat.closeAria">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="trip-chat-widget__summary" id="trip-chat-summary" data-i18n="chat.summaryIntro">
+                The assistant will answer from your selected route, stay, and itinerary.
+            </div>
+
+            <div class="trip-chat-widget__thread" id="trip-chat-thread">
+                <article class="trip-chat-message trip-chat-message--assistant">
+                    <div class="trip-chat-message__avatar"><i class="ri-sparkling-2-line"></i></div>
+                    <div class="trip-chat-message__bubble">
+                        <p class="trip-chat-message__author" data-i18n="chat.title">Trip Assistant</p>
+                        <div class="trip-chat-message__markdown">
+                            <p data-i18n="chat.intro">Ask about your selected route, timing, hotel, local logistics, or itinerary tradeoffs.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <form class="trip-chat-widget__form" id="trip-chat-form">
+                <textarea id="trip-chat-input" rows="3" placeholder="Example: Is this plan better for a relaxed family trip or a fast sightseeing trip?" data-i18n-placeholder="chat.placeholder"></textarea>
+                <div class="trip-chat-widget__actions">
+                    <p class="search-hint" data-i18n="chat.contextNote">Only the chosen trip bundle and itinerary are sent as context.</p>
+                    <button class="primary-button" id="trip-chat-submit" type="submit">
+                        <span data-i18n="chat.send">Send</span>
+                        <i class="ri-send-plane-2-line"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+name: full-tests
+
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  full-tests:
+    if: >-
+      github.event.label.name == 'test-run' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, bharatbhraman]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python3.12 -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt pytest
+
+      - name: Write .env from secret
+        run: |
+          cat > .env <<'__APP_ENV__'
+          ${{ secrets.WEB_ENV }}
+          __APP_ENV__
+
+      - name: Post "started" comment
+        id: comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const { data } = await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🧪 **Full test suite running** — label \`test-run\`\n\nLive integration + network tests against real providers.\n\n[View run](${runUrl})`,
+            });
+            core.setOutput('id', data.id);
+
+      - name: Run full suite (integration + network)
+        id: tests
+        continue-on-error: true
+        env:
+          RUN_INTEGRATION: "1"
+        run: |
+          set -o pipefail
+          .venv/bin/pytest -q --junitxml=report.xml | tee pytest-output.txt
+
+      - name: Update comment with report
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const ok = '${{ steps.tests.outcome }}' === 'success';
+
+            let stats = { tests: 0, failures: 0, errors: 0, skipped: 0, time: 0 };
+            try {
+              const xml = fs.readFileSync('report.xml', 'utf8');
+              const grab = (k) => {
+                const m = xml.match(new RegExp(`<testsuites?[^>]*\\b${k}="(\\d+(?:\\.\\d+)?)"`));
+                return m ? Number(m[1]) : 0;
+              };
+              stats = {
+                tests: grab('tests'), failures: grab('failures'),
+                errors: grab('errors'), skipped: grab('skipped'), time: grab('time'),
+              };
+            } catch (e) { core.warning('Could not parse report.xml: ' + e.message); }
+
+            const passed = Math.max(0, stats.tests - stats.failures - stats.errors - stats.skipped);
+            const header = ok ? '✅ **Full test suite passed**' : '❌ **Full test suite failed**';
+            let tail = '';
+            try {
+              tail = fs.readFileSync('pytest-output.txt', 'utf8').trim().split('\n').slice(-15).join('\n');
+            } catch (e) {}
+
+            const body = [
+              `${header} — label \`test-run\``,
+              '',
+              `| passed | failed | errors | skipped | total | time |`,
+              `| --- | --- | --- | --- | --- | --- |`,
+              `| ${passed} | ${stats.failures} | ${stats.errors} | ${stats.skipped} | ${stats.tests} | ${stats.time}s |`,
+              '',
+              tail ? `<details><summary>pytest tail</summary>\n\n\`\`\`\n${tail}\n\`\`\`\n</details>` : '',
+              '',
+              `[View full run](${runUrl})`,
+            ].join('\n');
+
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: Number('${{ steps.comment.outputs.id }}'),
+              body,
+            });
+
+      - name: Remove label to allow re-runs
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'test-run',
+              });
+            } catch (e) { core.info('Label already gone: ' + e.message); }
+
+      - name: Fail job if tests failed
+        if: steps.tests.outcome != 'success'
+        run: exit 1
